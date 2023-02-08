@@ -1,4 +1,4 @@
-# my-project-name
+# Vue Ulysse R
 
 ## Project setup
 ```
