@@ -17,17 +17,22 @@ export default {
 <template>
   <div id="app">
     <p5jsCanva  />
-    
+    <AnimalWidget />
+
   </div>
 </template>
 
 <script>
 import p5jsCanva from './components/p5jsCanva.vue';
+import AnimalWidget from './components/parameterWidget.vue'
+
 
 export default {
   name: 'App',
   components: {
     p5jsCanva,
+    AnimalWidget
+
   },
 
 };
