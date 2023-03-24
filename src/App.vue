@@ -18,24 +18,45 @@ export default {
   <div id="app">
     <p5jsCanva  />
     <AnimalWidget />
+    <button @click="doStuff">Click me!</button>
+    <p>{{ apiText }}</p>
+
+
+
 
   </div>
 </template>
 
 <script>
 import p5jsCanva from './components/p5jsCanva.vue';
-import AnimalWidget from './components/parameterWidget.vue'
+import AnimalWidget from './components/parameterWidget.vue';
+import Req from './services/api.js';
+
 
 
 export default {
   name: 'App',
+  data(){
+    return{
+      apiText: '',
+    }
+  },
+
+  methods: {
+			async doStuff() {
+					this.apiText = await Req.foo()
+			}},
   components: {
     p5jsCanva,
     AnimalWidget
 
   },
+  
 
 };
+
+
+
 </script>
 
 
