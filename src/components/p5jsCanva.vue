@@ -6,7 +6,15 @@
 import p5 from 'p5'
 
 export default {
+    data() {
+    return {
+      canvasWidth: 0,
+      canvasHeight: 0
+    };
+  },
   mounted() {
+    this.canvasWidth = window.innerWidth;
+    this.canvasHeight = window.innerHeight;
     this.createP5Sketch()
   },
 
@@ -20,12 +28,12 @@ export default {
 
 const sketch = function(p) {
   p.setup = function() {
-    p.createCanvas(400, 400)
+    p.createCanvas(1920,1080);
   }
 
   p.draw = function() {
-    p.background(220)
-    p.ellipse(200, 100, 100, 100)
+    p.background(220);
+    p.ellipse(200, 100, 100, 100);
   }
 }
 </script>
