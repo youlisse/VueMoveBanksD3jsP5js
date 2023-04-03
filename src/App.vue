@@ -18,9 +18,21 @@ export default {
   <div id="app">
     <p5jsCanva  />
     <AnimalWidget />
-    <button @click="doStuff">Click me!</button>
+    <button @click="Askfor">Click me!</button>
     <p>{{ apiText }}</p>
 
+    <table>
+      <thead>
+        <tr>
+          <th v-for="field in fields" :key="field">{{ field }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="row in data" :key="row.id">
+          <td v-for="field in fields" :key="field">{{ row[field] }}</td>
+        </tr>
+      </tbody>
+    </table>
 
 
 
@@ -39,13 +51,20 @@ export default {
   data(){
     return{
       apiText: '',
+      fields: [],
+      data: [],
     }
   },
 
   methods: {
-			async doStuff() {
-					this.apiText = await Req.foo()
-			}},
+			async Askfor() {
+					this.apiText = await Req.requestDataFrom()
+			},
+      async FillCsv(){          
+        this.fields= await Req.scanApiAcess()
+      }
+      },
+
   components: {
     p5jsCanva,
     AnimalWidget
