@@ -6,40 +6,62 @@
 import p5 from 'p5'
 
 export default {
-    data() {
+  props: {
+    resize: Boolean,
+  },
+
+  data() {
     return {
-      canvasWidth: 0,
-      canvasHeight: 0
+      containerWidth: 0,
+      containerHeight: 0,
+      p5Sketch: null,
     };
   },
+
   mounted() {
-    this.canvasWidth = window.innerWidth;
-    this.canvasHeight = window.innerHeight;
-    this.createP5Sketch()
+    window.addEventListener('resize', this.handleWindowResize);
+    this.handleWindowResize();
+  },
+
+  beforeUnmount() {
+    window.removeEventListener('resize', this.handleWindowResize);
   },
 
   methods: {
+    handleWindowResize() {
+      this.containerWidth = this.$refs.sketchContainer.clientWidth;
+      this.containerHeight = this.$refs.sketchContainer.clientHeight;
+
+      if (this.p5Sketch) {
+        this.p5Sketch.resizeCanvas(this.containerWidth, this.containerHeight);
+      } else {
+        this.createP5Sketch();
+      }
+    },
+
     createP5Sketch() {
       const container = this.$refs.sketchContainer
-      new p5(sketch, container)
+      this.p5Sketch = new p5(sketch, container)
+    },
+  },
+
+  watch: {
+    resize() {
+            this.containerWidth = this.$refs.sketchContainer.clientWidth;
+      this.containerHeight = this.$refs.sketchContainer.clientHeight;
+        this.p5Sketch.resizeCanvas(this.containerWidth, this.containerHeight);
     }
-  }
-}
+  },
+};
 
 const sketch = function(p) {
   p.setup = function() {
-    p.createCanvas(1920,1080);
-  }
+    p.createCanvas(p.windowWidth, p.windowHeight);
+  };
 
   p.draw = function() {
     p.background(220);
     p.ellipse(200, 100, 100, 100);
-  }
-}
+  };
+};
 </script>
-
-
-
-
-  
-  

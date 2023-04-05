@@ -27,7 +27,6 @@ fetch('https://www.movebank.org/movebank/service/direct-read?entity_type=study&i
     const gpsEntries = entries.filter(entry => entry.sensor_type_ids === 'GPS');
 
     // Convert the filtered entries back into CSV format
-   //const filteredCsvData = Papa.unparse(gpsEntries);
     const idAndNameArray = gpsEntries.map(row => ({ id: row.id, name: row.name }));
 
     // Do something with the filtered CSV data, such as displaying it in your Vue.js app

@@ -1,29 +1,11 @@
-<!-- <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <artistCard/>
-</template>
-
-
-<script>
-import artistCard from './components/artist.vue'
-
-export default {
-  name: 'App',
-  components: {
-    artistCard
-  }
-}
-</script> -->
 <template>
-  <div class="canva">
-    <p5jsCanva />
+  <div class="canva" id="p5js-container">
+    <p5jsCanva :resize="resize" />
   </div>
-
   <div id="app">
     <AnimalWidget />
     <button @click="Askfor">Click me!</button>
     <button @click="accesibleContent">crack me up!</button>
-
     <p>{{ apiText }}</p>
   </div>
 </template>
@@ -38,18 +20,28 @@ export default {
   data() {
     return {
       apiText: "",
+      resize: false,
     };
+  },
+  created() {
+    window.addEventListener("resize", this.handleResize);
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.handleResize);
   },
 
   methods: {
     async Askfor() {
       this.apiText = await Req.requestDataFrom();
     },
+
     async accesibleContent() {
       this.apiText = await Req.askFree();
     },
+    handleResize() {
+      this.resize = !this.resize;
+    },
   },
-
   components: {
     p5jsCanva,
     AnimalWidget,
@@ -57,52 +49,15 @@ export default {
 };
 </script>
 
-
-<!-- <style>
+<style>
 .canva {
+  position: relative;
+}
+
+#app {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 0;
+  z-index: 1; /* Make sure the #app div is on top of the .canva div */
 }
-
-.app {
-  position: relative;
-  top: 0;
-  left: 0;
-  z-index: 1;
-
-  /* Add a higher z-index value to make component B appear on top */
-}
-</style> -->
-<!-- <template>
-  <div id="app">
-    <p5-component></p5-component>
-  </div>
-</template>
-
-<script>
-import P5Component from "./components/p5jsCanva.vue";
-
-export default {
-  name: "App",
-  components: {
-    P5Component,
-  },
-};
-</script> -->
-
-<!-- <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style> -->
-
-
-
-
+</style>
