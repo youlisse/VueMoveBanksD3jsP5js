@@ -8,13 +8,15 @@ import p5 from 'p5'
 export default {
   props: {
     resize: Boolean,
+    
   },
-
   data() {
     return {
       containerWidth: 0,
       containerHeight: 0,
       p5Sketch: null,
+      pos :null ,
+
     };
   },
 
@@ -47,9 +49,13 @@ export default {
 
   watch: {
     resize() {
-            this.containerWidth = this.$refs.sketchContainer.clientWidth;
+      this.containerWidth = this.$refs.sketchContainer.clientWidth;
       this.containerHeight = this.$refs.sketchContainer.clientHeight;
-        this.p5Sketch.resizeCanvas(this.containerWidth, this.containerHeight);
+       this.p5Sketch.resizeCanvas(this.containerWidth, this.containerHeight);
+      //resizeCanvas(this.containerWidth, this.containerHeight);
+       // console.log("x : " +this.containerWidth+"y : " +this.containerHeight  );
+
+
     }
   },
 };
@@ -57,11 +63,17 @@ export default {
 const sketch = function(p) {
   p.setup = function() {
     p.createCanvas(p.windowWidth, p.windowHeight);
+    this.pos=0;
   };
 
   p.draw = function() {
-    p.background(220);
-    p.ellipse(200, 100, 100, 100);
-  };
+    p.background(200);
+    p.ellipse(this.pos, 100, 100, 100);
+     //p.resizeCanvas(this.pos, this.pos);
+    this.pos++;
+    if(this.pos>500)
+    this.pos=50;
+    //console.log("x : " +this.containerWidth+"y : " +this.containerHeight  );
+   };
 };
 </script>
