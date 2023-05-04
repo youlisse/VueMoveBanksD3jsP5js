@@ -7,7 +7,6 @@
     <div id="app">
       <AnimalWidget />
       <button @click="Askfor">Click me!</button>
-      <button @click="accesibleContent">crack me up!</button>
 
       <p>{{ apiText }}</p>
     </div>
@@ -36,28 +35,14 @@ export default {
       resize: false,
     };
   },
-  // created() {
-  //   window.addEventListener("resize", this.handleResize);
-  // },
-  // beforeUnmount() {
-  //   window.removeEventListener("resize", this.handleResize);
-  // },
 
   methods: {
     async Askfor() {
       this.apiText = await Req.requestDataFrom();
     },
-
-    async accesibleContent() {
-      this.apiText = await Req.askFree();
-    },
-    // handleResize() {
-    //   this.resize = !this.resize;
-    // },
   },
   components: {
     D3Chart,
-    //p5jsCanva,
     AnimalWidget,
   },
 };
