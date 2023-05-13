@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-select
+      class="my-select"
       v-model="value"
       :items="accessibleData"
       chips
@@ -13,27 +14,29 @@
     <button class="random-selection-button" @click="generateRandomSelection">
       Generate random selection
     </button>
-
-    <button class="clear-button" @click="clearSelection">
-      Clear selection
-    </button>
+    <div>
+      <button class="clear-button" @click="clearSelection">
+        Clear selection
+      </button>
+    </div>
 
     <div class="slider-container">
-      <label for="slider1">Slider 1:</label>
+      <label for="slider1">Speed</label>
       <input
         type="range"
         id="slider1"
         name="slider1"
         min="0"
-        max="10"
+        max="1000"
         v-model="slider1Value"
         class="slider"
+        @change="handleParameterChange"
       />
-      <span class="slider-value">{{ slider1Value }}</span>
+      <span class="slider-value"></span>
     </div>
 
     <div class="slider-container">
-      <label for="slider2">Slider 2:</label>
+      <label for="slider2">StrokeWeight</label>
       <input
         type="range"
         id="slider2"
@@ -42,19 +45,32 @@
         max="100"
         v-model="slider2Value"
         class="slider"
+        @change="handleParameterChange"
       />
-      <span class="slider-value">{{ slider2Value }}</span>
+      <span class="slider-value"></span>
     </div>
 
     <div class="color-picker-container">
-      <label for="color-picker">Color:</label>
+      <label for="color-picker">Background</label>
       <input
         type="color"
         id="color-picker"
         name="color-picker"
         v-model="colorValue"
+        @change="handleParameterChange"
       />
-      <span class="color-value">{{ colorValue }}</span>
+      <span class="color-value"></span>
+    </div>
+    <div class="color-picker-container">
+      <label for="color-picker">Stroke </label>
+      <input
+        type="color"
+        id="color-picker2"
+        name="color-picker2"
+        v-model="colorValue2"
+        @change="handleParameterChange"
+      />
+      <span class="color-value"></span>
     </div>
   </div>
 </template>
@@ -74,12 +90,22 @@ export default {
       selectedItems: [],
       value: [],
       slider1Value: 5,
-      slider2Value: 50,
-      colorValue: "#000000",
+      slider2Value: 10,
+      colorValue: "#292929",
+      colorValue2: "#42ffdc",
     };
   },
 
   methods: {
+    handleParameterChange() {
+      // Emit the event with the updated values
+      this.$emit("parameter-change", {
+        slider1Value: this.slider1Value,
+        slider2Value: this.slider2Value,
+        colorValue: this.colorValue,
+        colorValue2: this.colorValue2,
+      });
+    },
     clearSelection() {
       this.value = [];
       localStorage.removeItem("selectedItems"); // Remove from local storage
@@ -101,14 +127,33 @@ export default {
       this.value = randomItems.map((item) => item.id);
       localStorage.setItem("selectedItems", JSON.stringify(this.value));
     },
+
+    saveStorageValue() {
+      localStorage.setItem("selectedItems", JSON.stringify(this.value));
+    },
+    handleBeforeUnload(event) {
+      this.saveStorageValue();
+      event.preventDefault();
+    },
+
+    handleUnload() {
+      this.saveStorageValue();
+    },
   },
+
   async mounted() {
+    window.addEventListener("beforeunload", this.handleBeforeUnload);
+    window.addEventListener("unload", this.handleUnload);
+    this.colorValue = "#292929";
+    this.colorValue2 = "#42ffdc";
     await this.Askfor();
     const selectedItems = localStorage.getItem("selectedItems");
     this.value = JSON.parse(selectedItems); // Set value from local storag
   },
-  unmounted() {
-    localStorage.setItem("selectedItems", JSON.stringify(this.value));
+  beforeUnmount() {
+    window.removeEventListener("beforeunload", this.handleBeforeUnload);
+    window.removeEventListener("unload", this.handleUnload);
+    this.saveToLocalStorage();
   },
 };
 </script>
@@ -116,13 +161,23 @@ export default {
 
 <style>
 .clear-button {
-  font-size: 12px;
+  color: v-bind(colorValue2);
+  margin-left: 2%;
+}
+.save-button {
+  color: v-bind(colorValue2);
+  margin-left: 2%;
+}
+.random-selection-button {
+  color: v-bind(colorValue2);
+  margin-left: 2%;
 }
 
 .slider-container {
-  margin-top: 10px;
   display: flex;
   align-items: center;
+  color: v-bind(colorValue2);
+  margin-left: 2%;
 }
 
 .slider-container label {
@@ -135,9 +190,10 @@ export default {
 }
 
 .color-picker-container {
-  margin-top: 10px;
   display: flex;
   align-items: center;
+  color: v-bind(colorValue2);
+  margin-left: 2%;
 }
 
 .color-picker-container label {
@@ -148,8 +204,8 @@ export default {
   margin-left: 10px;
   font-size: 12px;
 }
-.random-selection-button {
-  margin-top: 10px;
-  font-size: 12px;
+
+.my-select {
+  color: v-bind(colorValue2);
 }
 </style>

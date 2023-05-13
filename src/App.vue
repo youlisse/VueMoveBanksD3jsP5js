@@ -1,15 +1,27 @@
 <template>
   <div>
+    <!-- <span class="color-value">{{ colorValue }}</span> -->
     <div class="canva" id="p5js-container">
-      <D3Chart />
-      <!-- <p5jsCanva :resize="resize" /> -->
+      <D3Chart
+        :slider1Value="parseInt(slider1Value)"
+        :slider2Value="parseInt(slider2Value)"
+        :colorValue="colorValue"
+        :colorValue2="colorValue2"
+      />
     </div>
     <div id="app">
-      <AnimalWidget />
+      <div class="animalSelection">
+        <AnimalWidget
+          :color-value="colorValue"
+          @parameter-change="handleParameterChange"
+          @color-change="colorValue = $event"
+        />
+      </div>
       <button @click="Askfor">Click me!</button>
 
       <p>{{ apiText }}</p>
     </div>
+    <!-- Inside the template section of App component -->
 
     <!-- Render your D3.js chart component here -->
   </div>
@@ -26,17 +38,27 @@
 import AnimalWidget from "./components/parameterWidget.vue";
 import Req from "./services/api.js";
 import D3Chart from "./components/D3Canva.vue"; // Import your D3Chart component
-
 export default {
   name: "App",
+
   data() {
     return {
       apiText: "",
       resize: false,
+      slider1Value: 5,
+      slider2Value: 10,
+      colorValue: "#292929",
+      colorValue2: "#42ffdc",
     };
   },
 
   methods: {
+    handleParameterChange(values) {
+      this.slider1Value = values.slider1Value;
+      this.slider2Value = values.slider2Value;
+      this.colorValue = values.colorValue;
+      this.colorValue2 = values.colorValue2;
+    },
     async Askfor() {
       this.apiText = await Req.requestDataFrom();
     },
