@@ -11,6 +11,7 @@
       multiple
       clearable
     ></v-select>
+
     <button class="random-selection-button" @click="generateRandomSelection">
       Generate random selection
     </button>
@@ -42,7 +43,7 @@
         id="slider2"
         name="slider2"
         min="0"
-        max="100"
+        max="80"
         v-model="slider2Value"
         class="slider"
         @change="handleParameterChange"
@@ -72,11 +73,30 @@
       />
       <span class="color-value"></span>
     </div>
+    <div>
+      <button
+        class="swap-button"
+        @click="swapSpiral"
+        @change="handleParameterChange"
+      >
+        Swap
+      </button>
+    </div>
+    <div>
+      <div>
+        <button class="req-button" @click="createVector">
+          request Data{{ movement }}
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 <script>
 import { VSelect } from "vuetify";
 import { askFree } from "./../services/api.js";
+import { requestDataFrom } from "./../services/api.js";
+import { calculateMovement } from "./../services/api.js";
+import { calculateAverageVectors } from "./../services/api.js";
 
 export default {
   name: "ParameterWidget",
@@ -90,20 +110,38 @@ export default {
       selectedItems: [],
       value: [],
       slider1Value: 5,
-      slider2Value: 10,
+      slider2Value: 30,
       colorValue: "#292929",
       colorValue2: "#42ffdc",
+      swap: true,
+      movement: 0,
     };
   },
 
   methods: {
+    async createVector() {
+      const data = await requestDataFrom();
+      const movement = calculateMovement(data);
+      const avgMouvement = calculateAverageVectors(movement);
+      this.movement = avgMouvement;
+    },
+    swapSpiral() {
+      this.swap = !this.swap;
+      this.handleParameterChange();
+      // eslint-disable-next-line no-undef
+    },
     handleParameterChange() {
+      const selectedIds = this.value;
+
+      // Do something with the selected item IDs
+      console.log(selectedIds);
       // Emit the event with the updated values
       this.$emit("parameter-change", {
         slider1Value: this.slider1Value,
         slider2Value: this.slider2Value,
         colorValue: this.colorValue,
         colorValue2: this.colorValue2,
+        swap: this.swap,
       });
     },
     clearSelection() {
@@ -130,6 +168,11 @@ export default {
 
     saveStorageValue() {
       localStorage.setItem("selectedItems", JSON.stringify(this.value));
+      localStorage.setItem("slider1", this.slider1Value);
+      localStorage.setItem("slider2", this.slider2Value);
+      localStorage.setItem("color1", this.colorValue);
+      localStorage.setItem("color2", this.colorValue2);
+      localStorage.setItem("swaped", this.swap);
     },
     handleBeforeUnload(event) {
       this.saveStorageValue();
@@ -142,13 +185,23 @@ export default {
   },
 
   async mounted() {
+    this.colorValue = "#000000";
+    this.colorValue2 = "#FFFFFF";
     window.addEventListener("beforeunload", this.handleBeforeUnload);
     window.addEventListener("unload", this.handleUnload);
-    this.colorValue = "#292929";
-    this.colorValue2 = "#42ffdc";
+    this.slider1Value = localStorage.getItem("slider1");
+    this.slider2Value = localStorage.getItem("slider2");
+    this.colorValue = localStorage.getItem("color1");
+    this.colorValue2 = localStorage.getItem("color2");
+    var isTrueSet = localStorage.getItem("swaped") === "true";
+
+    this.swap = isTrueSet;
+    this.handleParameterChange();
+
     await this.Askfor();
     const selectedItems = localStorage.getItem("selectedItems");
     this.value = JSON.parse(selectedItems); // Set value from local storag
+    this.handleParameterChange();
   },
   beforeUnmount() {
     window.removeEventListener("beforeunload", this.handleBeforeUnload);
@@ -160,6 +213,10 @@ export default {
 
 
 <style>
+.swap-button {
+  color: v-bind(colorValue2);
+  margin-left: 2%;
+}
 .clear-button {
   color: v-bind(colorValue2);
   margin-left: 2%;
@@ -174,38 +231,34 @@ export default {
 }
 
 .slider-container {
+  -webkit-appearance: none;
   display: flex;
   align-items: center;
-  color: v-bind(colorValue2);
   margin-left: 2%;
+  outline: none;
+  width: 100%;
+  height: 25px;
 }
-
 .slider-container label {
   margin-right: 10px;
-}
-
-.slider-value {
-  margin-left: 10px;
-  font-size: 12px;
+  color: v-bind(colorValue2);
 }
 
 .color-picker-container {
   display: flex;
   align-items: center;
-  color: v-bind(colorValue2);
   margin-left: 2%;
 }
 
 .color-picker-container label {
   margin-right: 10px;
-}
-
-.color-value {
-  margin-left: 10px;
-  font-size: 12px;
+  color: v-bind(colorValue2);
 }
 
 .my-select {
   color: v-bind(colorValue2);
+}
+body {
+  overflow: hidden; /* Hide scrollbars */
 }
 </style>

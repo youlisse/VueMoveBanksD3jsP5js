@@ -1,4 +1,5 @@
 <template>
+    
   <svg ref="chartContainer" class="chart-container"></svg>
 
 </template>
@@ -24,6 +25,10 @@ export default {
   colorValue2: {
     type: String,
     required: true
+  },
+  swap: {
+    type: Boolean,
+    required: true
   }
 },
 
@@ -32,7 +37,7 @@ export default {
     return {
       refresh: false,
       timer: null,
-      t: 0
+      t: 0,
     };
   },
   mounted() {
@@ -65,10 +70,16 @@ export default {
       this.updateChart();
     },
   },
+    swap: {
+    handler() {
+      this.updateChart();
+    },
+  },
 },
 
   
   methods: {
+
     refresfChart(){  
       this.createChart();
       window.addEventListener("resize", this.createChart);
@@ -77,48 +88,58 @@ export default {
 
 
     
-    spiral(width,height,svg){
-       const spiral = svg
-        .append("path")
-        .attr("fill", "none")
-        .attr("stroke", this.colorValue2)
-        .attr("stroke-opacity", 1)
-        .attr("stroke-width", Math.exp(this.slider2Value*0.1)*0.00025+0.01
-        );
+    spiral(width, height, svg) {
+  const spiral = svg
+    .append("path")
+    .attr("fill", "none")
+    .attr("stroke", this.colorValue2)
+    .attr("stroke-opacity", 1)
+    .attr("stroke-width", Math.exp(this.slider2Value * 0.1 + 2) * 0.00025 + 0.05);
 
-      const range = d3.range(-40 * Math.PI, 40 * Math.PI, 0.02);
+  const range = d3.range(-40 * Math.PI, 40 * Math.PI, 0.02);
 
-      if (this.timer) {
-        clearInterval(this.timer);
-      }
+  let t = this.t;
 
-      this.timer = setInterval(() => {
-        let d = "M";
+  const animate = () => {
+    let d = "M";
 
-        for (let i = 0; i < range.length; i++) {
-          const p = range[i];
-          d += 0.18 * width * (Math.sin(4.01 * p + this.t / 20222) + Math.sin(3 * p + this.t / 2000));
-          d += ",";
-          d += 0.128 * height * (Math.sin(2.005 * p + this.t / 4000) + Math.sin(1.01 * p + this.t / 2000));
-          if (i !== range.length - 1) d += "L";
-        }
+    for (let i = 0; i < range.length; i++) {
+      const p = range[i];
+      d += 0.15 * width * (Math.sin(4.01 * p + t / 20222) + Math.sin(3 * p + t / 2000));
+      d += ",";
+      d += 0.11 * height * (Math.sin(2.005 * p + t / 4000) + Math.sin(1.01 * p + t / 2000));
+      if (i !== range.length - 1) d += "L";
+    }
 
-        d = d.slice(0, -1);
-        spiral.attr("d", d);
-        svg.attr("transform", "translate(" + [width / 2, height / 2] + ")rotate(" + 360 * (this.t % 100000 / 100000) + ")");
+    d = d.slice(0, -1);
+    spiral.attr("d", d);
+    svg.attr(
+      "transform",
+      "translate(" + [width / 2, height / 2] + ")rotate(" + 360 * (t % 100000 / 100000) + ")"
+    );
 
-        this.t += 0.5*this.slider1Value+1;
-      });
-    },
+    t += 0.5 * this.slider1Value + 1;
+
+    if (t ) {
+      requestAnimationFrame(animate);
+    } else {
+      clearInterval(this.timer);
+    }
+  };
+
+  animate();
+},
 
 spiral2(width, height, svg, a, b) {
-  const spiral = svg.selectAll("path")
+  const spiral = svg
+    .selectAll("path")
     .data(d3.range(0, 4 * Math.PI, Math.PI / 4))
-    .enter().append("path")
+    .enter()
+    .append("path")
     .attr("fill", "none")
     .attr("stroke", this.colorValue2)
     .attr("stroke-opacity", 0.4)
-    .attr("stroke-width", Math.exp(this.slider2Value * 0.1) * 0.00008 + 0.5);
+    .attr("stroke-width", this.slider2Value * 0.15 * 0.4 + 0.1);
 
   const range = d3.range(0, 15.5 * Math.PI, 0.1);
 
@@ -129,17 +150,19 @@ spiral2(width, height, svg, a, b) {
       const thetaOffset = d * 10;
       const pathData = range.map((θ) => {
         const r = a * Math.exp(b * θ);
-        const x = (r + 100 * (Math.cos(t / 2000) - 1)) * Math.cos(θ - t / 1000 + thetaOffset);
-        const y = (r + 100 * (Math.sin(t / 2000) - 1)) * Math.sin(θ - t / 1000 + thetaOffset);
+        const x = (r + (height / 3) * (Math.cos(t / 2000) - 1)) * Math.cos(θ - t / 1000 + thetaOffset);
+        const y = (r + (height / 3) * (Math.sin(t / 2000) - 1)) * Math.sin(θ - t / 1000 + thetaOffset);
         return [x, y];
       });
       return "M" + pathData.join("L");
     });
 
-    t += this.slider1Value/40  + 1;
-    this.t=t;
+    t += this.slider1Value / 40 + 1;
+    this.t = t;
 
-    requestAnimationFrame(animate);
+    if (t ) {
+      requestAnimationFrame(animate);
+    }
   };
 
   animate();
@@ -153,7 +176,8 @@ spiral2(width, height, svg, a, b) {
     const slider2Value = this.slider2Value;
     const colorValue = this.colorValue;
     const colorValue2 = this.colorValue2;
-
+    const swap =this.swap;
+ 
     /* eslint-enable */
     this.refresfChart();
 
@@ -178,8 +202,11 @@ spiral2(width, height, svg, a, b) {
         .attr("fill", this.colorValue);
 
       const svg = chartContainer.append("g").attr("transform", "translate(" + [width / 2, height / 2] + ")");
-      //this.spiral(width,height,svg);
-      this.spiral2(width,height,svg,1,0.1);
+      if(this.swap)
+        this.spiral(width,height,svg);
+      else
+        this.spiral2(width,height,svg,1,0.1);
+        
      
     }
   },
@@ -190,8 +217,13 @@ spiral2(width, height, svg, a, b) {
 </script>
 
 <style scoped>
+
 .chart-container {
   position: relative;
   margin-bottom: -5%;
+  
+
 }
+
+
 </style>
