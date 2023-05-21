@@ -88,6 +88,14 @@
           request Data{{ movement }}
         </button>
       </div>
+      <div>
+        <img
+          v-if="isLoading"
+          :src="loading"
+          alt="Loading..."
+          class="loading-animation"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -97,6 +105,7 @@ import { askFree } from "./../services/api.js";
 import { requestDataFrom } from "./../services/api.js";
 import { calculateMovement } from "./../services/api.js";
 import { calculateAverageVectors } from "./../services/api.js";
+import loading from "./../assets/loading.gif";
 
 export default {
   name: "ParameterWidget",
@@ -115,15 +124,35 @@ export default {
       colorValue2: "#42ffdc",
       swap: true,
       movement: 0,
+      loading,
+      isLoading: false,
     };
   },
 
   methods: {
     async createVector() {
-      const data = await requestDataFrom();
-      const movement = calculateMovement(data);
-      const avgMouvement = calculateAverageVectors(movement);
-      this.movement = avgMouvement;
+      console.log("let's");
+      this.isLoading = true;
+
+      const mouvementarray = [];
+      for (let i = 0; i < this.value.length; i++) {
+        const data = await requestDataFrom(this.value[i]);
+        const mouvement = calculateMovement(data);
+
+        const avgMouvement = calculateAverageVectors(mouvement);
+        if (
+          !isNaN(avgMouvement.x) ||
+          !isNaN(avgMouvement.y) ||
+          isFinite(avgMouvement.x) ||
+          isFinite(avgMouvement.y)
+        )
+          mouvementarray.push(avgMouvement);
+      }
+      const res = calculateAverageVectors(mouvementarray);
+      if (!isNaN(res.x) || !isNaN(res.y) || isFinite(res.x) || isFinite(res.y))
+        this.movement = res;
+      console.log("GO");
+      this.isLoading = false;
     },
     swapSpiral() {
       this.swap = !this.swap;
@@ -131,10 +160,11 @@ export default {
       // eslint-disable-next-line no-undef
     },
     handleParameterChange() {
-      const selectedIds = this.value;
+      // const selectedIds = this.value;
+      //console.log(selectedIds);
+      this.saveStorageValue();
 
       // Do something with the selected item IDs
-      console.log(selectedIds);
       // Emit the event with the updated values
       this.$emit("parameter-change", {
         slider1Value: this.slider1Value,
@@ -258,7 +288,18 @@ export default {
 .my-select {
   color: v-bind(colorValue2);
 }
-body {
-  overflow: hidden; /* Hide scrollbars */
+.req-button {
+  display: flex;
+  align-items: center;
+  margin-left: 2%;
+}
+.loading-animation {
+  margin-top: 2%;
+
+  margin-left: 5%;
+  width: 5%;
+  filter: brightness(0.1);
+  filter: grayscale(100%);
+  opacity: 0.2; /* Adjust the opacity value (0.0 to 1.0) as per your preference */
 }
 </style>

@@ -23,17 +23,49 @@ class vec2 {
   }
 }
 
-export async function requestDataFrom() {
+export async function requestDataFrom(id) {
+  const username = 'youlisse';
+  const password = 'Rousselu1*';
 
-    let res = await fetch('https://www.movebank.org/movebank/service/direct-read?entity_type=event&study_id=657674643&api-token=7f2c8c37-29dc-408f-82cb-f108fdcd2d1b');
-    let licence=res.text();
-    const CryptoJS = require("crypto-js");
-    const hash = CryptoJS.MD5(licence).toString(CryptoJS.enc.Hex);
-    let answer = await fetch('https://www.movebank.org/movebank/service/direct-read?entity_type=event&study_id=220229&api-token=7f2c8c37-29dc-408f-82cb-f108fdcd2d1b&license-md5='+hash);
-    return answer.text();
-    //return licence;
+  // Step 1: Request license terms
+  const params = new URLSearchParams({
+    entity_type: 'event',
+    study_id: id,
+  });
 
-           } 
+  const response1 = await fetch(`https://www.movebank.org/movebank/service/direct-read?${params.toString()}`, {
+    headers: {
+      Authorization: `Basic ${btoa(`${username}:${password}`)}`,
+    },
+  });
+
+  if (response1.status !== 200) {
+    console.log(`Request failed with status code: ${response1.status}`);
+    return '';
+  }
+
+  const licenseTerms = await response1.text();
+      const CryptoJS = require("crypto-js");
+
+  const licenseHash = CryptoJS.MD5(licenseTerms).toString(CryptoJS.enc.Hex);
+
+  // Step 2: Request data with license hash
+  params.append('license-md5', licenseHash);
+
+  const response2 = await fetch(`https://www.movebank.org/movebank/service/direct-read?${params.toString()}`, {
+    headers: {
+      Authorization: `Basic ${btoa(`${username}:${password}`)}`,
+    },
+  });
+
+  if (response2.status !== 200) {
+    console.log(`Request failed with status code: ${response2.status}`);
+    return '';
+  }
+
+  const data = await response2.text();
+  return data;
+}
 export async function askFree() {
   return new Promise((resolve, reject) => {
     fetch('https://www.movebank.org/movebank/service/direct-read?entity_type=study&i_have_download_access=true&api-token=7f2c8c37-29dc-408f-82cb-f108fdcd2d1b')
@@ -67,7 +99,8 @@ function calculateMovement(csvData) {
   let movementArray = [];
 
   // Loop through the lines of the CSV data
-  for (let i = 2; i < lines.length-1; i++) {
+  for (let i = 1; i < lines.length-1; i++) {
+    //console.log(lines[i]);
     // Split each line into an array of values
     let values = lines[i].split(',');
 
@@ -75,22 +108,27 @@ function calculateMovement(csvData) {
     let x = parseFloat(values[1]);
     let y = parseFloat(values[2]);
 
-    // Skip entries with null values
-    // if (isNaN(parseFloat(x)) || isNaN(parseFloat(y))|| values[1].trim() === "" || values[2].trim() === "") {
-    //   continue;
-    // }
-
-    // Extract the previous x and y values from the previous line
+   
+    if (isNaN(x) || isNaN(y) || !isFinite(x) || !isFinite(y)) {
+    continue;
+    }
+    
     let prevValues = lines[i-1].split(',');
     let prevX = parseFloat(prevValues[1]);
     let prevY = parseFloat(prevValues[2]);
-    let moveX =  prevX;
-    let moveY =  prevY;
+      if (isNaN(prevX) || isNaN(prevY) || !isFinite(prevX) || !isFinite(prevY)) {
+      continue;
+    }
+    if (i==1){
+      prevX =0.0;
+      prevY = 0.0;
+    }
+    
     // Calculate the movement by subtracting the previous position from the current position
-    if(i>1){
-      moveX = x - prevX;
-      moveY = y - prevY;}
-
+  
+    let  moveX = x - prevX;
+    let  moveY = y - prevY;
+    //console.log(moveY);
     // Create a new vec2 object with the calculated movement
     let movement = new vec2(moveX, moveY);
 
@@ -99,6 +137,7 @@ function calculateMovement(csvData) {
 
     // Push the movement object into the movementArray
     movementArray.push(movement);
+  //}
   }
 
   // Return the movementArray
@@ -123,7 +162,7 @@ function calculateAverageVectors(vectors) {
   // Return the average vector as a new vec2 object
    let vec =new vec2(averageX, averageY);
    vec.normalize();
-   console.log(vec);
+   //console.log(vec);
    return vec;
 }
 

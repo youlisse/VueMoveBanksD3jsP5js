@@ -17,8 +17,6 @@
           @color-change="colorValue = $event"
         />
       </div>
-      <button @click="Askfor">Click me!</button>
-      <p>{{ apiText }}</p>
     </div>
   </div>
 </template>
@@ -32,14 +30,12 @@
 <script>
 //import p5jsCanva from "./components/p5jsCanva.vue";
 import AnimalWidget from "./components/parameterWidget.vue";
-import Req from "./services/api.js";
 import D3Chart from "./components/D3Canva.vue"; // Import your D3Chart component
 export default {
   name: "App",
 
   data() {
     return {
-      apiText: "",
       resize: false,
       slider1Value: 5,
       slider2Value: 10,
@@ -56,9 +52,6 @@ export default {
       this.colorValue = values.colorValue;
       this.colorValue2 = values.colorValue2;
       this.swap = values.swap;
-    },
-    async Askfor() {
-      this.apiText = await Req.requestDataFrom();
     },
   },
   components: {
