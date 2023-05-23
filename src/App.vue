@@ -7,6 +7,7 @@
         :colorValue="colorValue"
         :colorValue2="colorValue2"
         :swap="swap"
+        :movement="movement"
       />
     </div>
     <div id="app">
@@ -42,6 +43,7 @@ export default {
       colorValue: "#000000",
       colorValue2: "#FFFFFF",
       swap: true,
+      movement: 0,
     };
   },
 
@@ -52,6 +54,7 @@ export default {
       this.colorValue = values.colorValue;
       this.colorValue2 = values.colorValue2;
       this.swap = values.swap;
+      this.movement = values.movement;
     },
   },
   components: {

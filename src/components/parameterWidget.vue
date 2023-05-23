@@ -151,8 +151,9 @@ export default {
       const res = calculateAverageVectors(mouvementarray);
       if (!isNaN(res.x) || !isNaN(res.y) || isFinite(res.x) || isFinite(res.y))
         this.movement = res;
-      console.log("GO");
+      this.handleParameterChange();
       this.isLoading = false;
+      console.log("GO");
     },
     swapSpiral() {
       this.swap = !this.swap;
@@ -162,7 +163,7 @@ export default {
     handleParameterChange() {
       // const selectedIds = this.value;
       //console.log(selectedIds);
-      this.saveStorageValue();
+      //this.saveStorageValue();
 
       // Do something with the selected item IDs
       // Emit the event with the updated values
@@ -172,6 +173,7 @@ export default {
         colorValue: this.colorValue,
         colorValue2: this.colorValue2,
         swap: this.swap,
+        movement: this.movement,
       });
     },
     clearSelection() {
@@ -198,11 +200,13 @@ export default {
 
     saveStorageValue() {
       localStorage.setItem("selectedItems", JSON.stringify(this.value));
+
       localStorage.setItem("slider1", this.slider1Value);
       localStorage.setItem("slider2", this.slider2Value);
       localStorage.setItem("color1", this.colorValue);
       localStorage.setItem("color2", this.colorValue2);
       localStorage.setItem("swaped", this.swap);
+      localStorage.setItem("movement", this.movement);
     },
     handleBeforeUnload(event) {
       this.saveStorageValue();
@@ -223,6 +227,8 @@ export default {
     this.slider2Value = localStorage.getItem("slider2");
     this.colorValue = localStorage.getItem("color1");
     this.colorValue2 = localStorage.getItem("color2");
+    this.movement = localStorage.getItem("movement");
+
     var isTrueSet = localStorage.getItem("swaped") === "true";
 
     this.swap = isTrueSet;
@@ -232,29 +238,33 @@ export default {
     const selectedItems = localStorage.getItem("selectedItems");
     this.value = JSON.parse(selectedItems); // Set value from local storag
     this.handleParameterChange();
+    // console.log(selectedItems);
   },
   beforeUnmount() {
     window.removeEventListener("beforeunload", this.handleBeforeUnload);
     window.removeEventListener("unload", this.handleUnload);
-    this.saveToLocalStorage();
+    this.saveStorageValue();
   },
 };
 </script>
-
 
 <style>
 .swap-button {
   color: v-bind(colorValue2);
   margin-left: 2%;
 }
+
 .clear-button {
   color: v-bind(colorValue2);
   margin-left: 2%;
+  font-size: 100%;
 }
+
 .save-button {
   color: v-bind(colorValue2);
   margin-left: 2%;
 }
+
 .random-selection-button {
   color: v-bind(colorValue2);
   margin-left: 2%;
@@ -269,6 +279,7 @@ export default {
   width: 100%;
   height: 25px;
 }
+
 .slider-container label {
   margin-right: 10px;
   color: v-bind(colorValue2);
@@ -288,18 +299,45 @@ export default {
 .my-select {
   color: v-bind(colorValue2);
 }
+
 .req-button {
+  color: v-bind(colorValue2);
   display: flex;
   align-items: center;
   margin-left: 2%;
 }
+
 .loading-animation {
   margin-top: 2%;
-
   margin-left: 5%;
-  width: 5%;
-  filter: brightness(0.1);
+  width: 6%;
+  filter: brightness(0.5);
   filter: grayscale(100%);
-  opacity: 0.2; /* Adjust the opacity value (0.0 to 1.0) as per your preference */
+  opacity: 0.3;
+}
+
+/* Media query for iPhone 6 and above */
+@media (min-width: 200px) {
+  .my-select {
+    font-size: 14px;
+  }
+
+  .swap-button,
+  .clear-button,
+  .save-button,
+  .random-selection-button,
+  .slider-container label,
+  .color-picker-container label,
+  .req-button {
+    font-size: 14px;
+  }
+
+  .slider-container {
+    height: 20px;
+  }
+
+  .loading-animation {
+    width: 4%;
+  }
 }
 </style>

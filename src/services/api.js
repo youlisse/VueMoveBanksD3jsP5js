@@ -108,7 +108,7 @@ function calculateMovement(csvData) {
     let x = parseFloat(values[1]);
     let y = parseFloat(values[2]);
 
-   
+    // Avoiding any stranger answer like a data with empty case
     if (isNaN(x) || isNaN(y) || !isFinite(x) || !isFinite(y)) {
     continue;
     }
@@ -116,6 +116,7 @@ function calculateMovement(csvData) {
     let prevValues = lines[i-1].split(',');
     let prevX = parseFloat(prevValues[1]);
     let prevY = parseFloat(prevValues[2]);
+    // Same here pour eviter le précedent vide
       if (isNaN(prevX) || isNaN(prevY) || !isFinite(prevX) || !isFinite(prevY)) {
       continue;
     }
@@ -124,7 +125,6 @@ function calculateMovement(csvData) {
       prevY = 0.0;
     }
     
-    // Calculate the movement by subtracting the previous position from the current position
   
     let  moveX = x - prevX;
     let  moveY = y - prevY;
@@ -132,7 +132,7 @@ function calculateMovement(csvData) {
     // Create a new vec2 object with the calculated movement
     let movement = new vec2(moveX, moveY);
 
-    // Normalize the movement vector
+    // Normalize the movement vector( pour chaque data nous avons un vecteur normalizer et avec le référentiel du vecteur precedent)
     movement.normalize();
 
     // Push the movement object into the movementArray
@@ -140,7 +140,6 @@ function calculateMovement(csvData) {
   //}
   }
 
-  // Return the movementArray
   return movementArray;
 }
 
