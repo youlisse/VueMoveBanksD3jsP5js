@@ -50,6 +50,20 @@
       />
       <span class="slider-value"></span>
     </div>
+    <div class="slider-container">
+      <label for="slider3">Chaos</label>
+      <input
+        type="range"
+        id="slider3"
+        name="slider3"
+        min="0"
+        max="1000"
+        v-model="slider3Value"
+        class="slider"
+        @change="handleParameterChange"
+      />
+      <span class="slider-value"></span>
+    </div>
 
     <div class="color-picker-container">
       <label for="color-picker">Background</label>
@@ -88,6 +102,7 @@
           request Data{{ movement }}
         </button>
       </div>
+
       <div>
         <img
           v-if="isLoading"
@@ -96,6 +111,26 @@
           class="loading-animation"
         />
       </div>
+    </div>
+    <div class="text">
+      <h1 class="h1">Geo Beast</h1>
+
+      <h2 class="h2">
+        Geo Beast is an App that takes data from Animals GPS location<br />
+        converts movements into an average_translation_Vector2<br />
+        and uses this data to create generative art
+        <br />
+        <br />
+        Step 1 Selection of Studies
+        <br />
+        Step 2 request data
+        <br />
+        Step 3 tweak it
+      </h2>
+      <p class="p">
+        made by Youlisse<br />
+        Special thanks to MoveBank API and jfirebaugh (jfire.io/animations)
+      </p>
     </div>
   </div>
 </template>
@@ -120,6 +155,7 @@ export default {
       value: [],
       slider1Value: 5,
       slider2Value: 30,
+      slider3Value: 30,
       colorValue: "#292929",
       colorValue2: "#42ffdc",
       swap: true,
@@ -170,6 +206,7 @@ export default {
       this.$emit("parameter-change", {
         slider1Value: this.slider1Value,
         slider2Value: this.slider2Value,
+        slider3Value: this.slider3Value,
         colorValue: this.colorValue,
         colorValue2: this.colorValue2,
         swap: this.swap,
@@ -190,9 +227,11 @@ export default {
     },
     generateRandomSelection() {
       // Choose three random items from the accessibleData array
+      var randomNumber = Math.floor(Math.random() * 3) + 1; // Generates a random integer between 1 and 3
+
       const randomItems = this.accessibleData
         .sort(() => Math.random() - 0.5)
-        .slice(0, 3);
+        .slice(0, randomNumber);
 
       this.value = randomItems.map((item) => item.id);
       localStorage.setItem("selectedItems", JSON.stringify(this.value));
@@ -203,6 +242,7 @@ export default {
 
       localStorage.setItem("slider1", this.slider1Value);
       localStorage.setItem("slider2", this.slider2Value);
+      localStorage.setItem("slider3", this.slider3Value);
       localStorage.setItem("color1", this.colorValue);
       localStorage.setItem("color2", this.colorValue2);
       localStorage.setItem("swaped", this.swap);
@@ -225,6 +265,7 @@ export default {
     window.addEventListener("unload", this.handleUnload);
     this.slider1Value = localStorage.getItem("slider1");
     this.slider2Value = localStorage.getItem("slider2");
+    this.slider3Value = localStorage.getItem("slider3");
     this.colorValue = localStorage.getItem("color1");
     this.colorValue2 = localStorage.getItem("color2");
     this.movement = localStorage.getItem("movement");
@@ -249,35 +290,55 @@ export default {
 </script>
 
 <style>
-.swap-button {
+.text {
+  font-family: "Trebuchet MS", sans-serif;
   color: v-bind(colorValue2);
-  margin-left: 2%;
+  text-align: right;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 10px;
+  font-size: 5px;
+  margin-right: 10px;
+  line-height: 1.2;
 }
 
-.clear-button {
-  color: v-bind(colorValue2);
-  margin-left: 2%;
-  font-size: 100%;
-}
-
-.save-button {
-  color: v-bind(colorValue2);
-  margin-left: 2%;
-}
-
+.req-button,
+.swap-button,
+.clear-button,
 .random-selection-button {
+  border: none;
+  border-radius: 5px;
+  padding: 0.3%;
+
+  font-family: "Trebuchet MS", sans-serif;
   color: v-bind(colorValue2);
-  margin-left: 2%;
+  margin-left: 1%;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  cursor: pointer;
+}
+
+.req-button:hover,
+.swap-button:hover,
+.clear-button:hover,
+.random-selection-button:hover {
+  background-color: v-bind(colorValue2);
+  color: v-bind(colorValue);
+}
+.req-button {
+  text-decoration: underline;
+  position: absolute;
+  bottom: 0;
 }
 
 .slider-container {
+  font-family: "Trebuchet MS", sans-serif;
+  color: v-bind(colorValue2);
   -webkit-appearance: none;
   display: flex;
   align-items: center;
-  margin-left: 2%;
-  outline: none;
-  width: 100%;
-  height: 25px;
+  margin-left: 1%;
+  padding: 0.3%;
 }
 
 .slider-container label {
@@ -285,59 +346,95 @@ export default {
   color: v-bind(colorValue2);
 }
 
-.color-picker-container {
-  display: flex;
-  align-items: center;
-  margin-left: 2%;
+.slider-container input[type="range"] {
+  -webkit-appearance: none;
+  width: 10vw;
+  height: 0.02vw;
+  background-color: v-bind(colorValue2);
+  outline: none;
+  margin-top: 0.1vw;
+  margin-bottom: 0.1vw;
+}
+
+.slider-container input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 0.7vw;
+  height: 0.7vw;
+  background-color: v-bind(colorValue);
+  border: 0.15vw solid v-bind(colorValue2);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.slider-container input[type="range"]::-webkit-slider-thumb:hover {
+  background-color: v-bind(colorValue2);
+}
+
+.slider-container .slider-value {
+  margin-left: 1rem;
+  font-weight: bold;
+  color: #333;
 }
 
 .color-picker-container label {
-  margin-right: 10px;
+  font-family: "Trebuchet MS", sans-serif;
   color: v-bind(colorValue2);
+  margin-left: 1%;
+  padding: 0.3%;
+  margin-top: 15%;
 }
 
 .my-select {
   color: v-bind(colorValue2);
 }
 
-.req-button {
-  color: v-bind(colorValue2);
-  display: flex;
-  align-items: center;
-  margin-left: 2%;
-}
-
 .loading-animation {
-  margin-top: 2%;
-  margin-left: 5%;
-  width: 6%;
+  margin-top: 10px;
+  margin-left: 10px;
+  width: 40px;
   filter: brightness(0.5);
   filter: grayscale(100%);
   opacity: 0.3;
+  position: absolute;
 }
 
-/* Media query for iPhone 6 and above */
-@media (min-width: 200px) {
-  .my-select {
-    font-size: 14px;
-  }
+.h1 {
+  font-size: 2vw;
+}
+.h2 {
+  font-size: 1vw;
+}
+.p {
+  font-size: 0.5vw;
+}
+.text {
+  padding: 0.5%;
+}
 
-  .swap-button,
-  .clear-button,
-  .save-button,
-  .random-selection-button,
-  .slider-container label,
-  .color-picker-container label,
-  .req-button {
-    font-size: 14px;
-  }
+.req-button,
+.swap-button,
+.clear-button,
+.random-selection-button {
+  font-size: 1.1vw;
+}
 
-  .slider-container {
-    height: 20px;
-  }
+.color-picker-container label {
+  font-size: 1.1vw;
+}
 
-  .loading-animation {
-    width: 4%;
-  }
+.slider-container label {
+  font-size: 1.1vw;
+}
+
+.loading-animation {
+  margin-top: 10px;
+  margin-left: 10px;
+  width: 40px;
+  filter: brightness(0.5);
+  filter: grayscale(100%);
+  opacity: 0.3;
+  position: absolute;
 }
 </style>

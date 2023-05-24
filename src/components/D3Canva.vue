@@ -17,6 +17,10 @@ export default {
   slider2Value: {
     type: Number,
     required: true
+  },  
+  slider3Value: {
+    type: Number,
+    required: true
   },
   colorValue: {
     type: String,
@@ -66,6 +70,11 @@ export default {
       this.updateChart();
     },
   },
+  slider3Value: {
+    handler() {
+      this.updateChart();
+    },
+  },
   colorValue: {
     handler() {
       this.updateChart();
@@ -105,9 +114,9 @@ methods: {
       .attr("stroke-opacity", 1)
       .attr("stroke-width", Math.exp(this.slider2Value * 0.1 + 2) * 0.00025 + 0.05);
 
-    const range = d3.range(-50*Math.abs(this.x) * Math.PI,
+    const range = d3.range(-50*Math.abs(this.y) * Math.PI,
                             50*Math.abs(this.y)* Math.PI,
-                            Math.abs(0.3*Math.cos(this.x*this.y*40)));
+                            Math.abs(0.15*Math.cos(this.x*this.y*40)));
 
     let t = this.t;
 
@@ -116,9 +125,16 @@ methods: {
 
       for (let i = 0; i < range.length; i++) {
         const p = range[i];
-        d += 0.15 * width * (Math.sin(4.01 * p + .5*this.x*t / 20000) +Math.abs(Math.cos(this.x*this.y*40))* Math.sin(parseInt(this.y*4) * p + t / 200000));
+        if(this.slider3Value<10){d += (Math.abs(this.y))*0.2 * width * (Math.sin(4.01 * p + t / 20222) +Math.abs(Math.cos(this.x*this.y*10))* Math.sin(3 * p + t / 10000));
         d += ",";
-        d += 0.11 * height * (Math.sin(2.005 * p + .5*this.y*t / 20000) +Math.abs(Math.sin(this.x*this.y*40))* Math.sin(parseInt(this.x*4) * p + t / 200000));
+        d += (Math.abs(this.x))*0.2 * height * (Math.sin(2.005 * p + t / 4000) +Math.abs(Math.sin(this.x*this.y*40))/Math.cos(t*0.00001)* Math.sin(1.01 * p + t / 10000));}
+        else{
+        d += (Math.abs(this.y))*0.2 * width * (Math.sin(4.01 * p + t / 20222) +Math.abs(Math.cos(this.x*this.y*10))* Math.sin(3 * p + t / 10000))
+        + 0.15 * width * ( Math.abs(Math.cos(this.x*this.y*40))* Math.sin( p + t / 200000))*this.slider3Value*0.001;
+        d += ",";
+        d += (Math.abs(this.x))*0.2 * height * (Math.sin(2.005 * p + t / 4000) +Math.abs(Math.sin(this.x*this.y*40))/Math.cos(t*0.00001)* Math.sin(1.01 * p + t / 10000))
+        + 0.21 * height * (Math.abs(Math.cos(this.x*this.y*40))* Math.sin(10 * p + t / 200000))*this.slider3Value*0.001;
+          }
         if (i !== range.length - 1) d += "L";
       }
 
@@ -126,7 +142,7 @@ methods: {
       spiral.attr("d", d);
       svg.attr(
         "transform",
-        "translate(" + [width / 2, height / 2] + ")rotate(" + 360 * (t*Math.abs(Math.sin(this.x*this.y*40)) % 100000 / 100000) + ")"
+        "translate(" + [width / 2, height / 2] + ")rotate(" + 360 * ((t*Math.abs(Math.sin(this.x*this.y*40))) % 100000 / 100000) + ")"
       );
 
       t += 0.5 * this.slider1Value + 1;
@@ -145,28 +161,33 @@ methods: {
     
     const spiral = svg
       .selectAll("path")
-      .data(d3.range(0, 4 * Math.PI, Math.PI / 4))
+      .data(d3.range(0, 1 * Math.PI, Math.PI / 4))
       .enter()
       .append("path")
       .attr("fill", "none")
       .attr("stroke", this.colorValue2)
-      .attr("stroke-opacity", 0.4)
+      .attr("stroke-opacity", 1)
       .attr("stroke-width", this.slider2Value * 0.15 * 0.4 + 0.1);
 
-    const range = d3.range(2,
-                          15 * Math.PI,
-                          Math.abs(0.3*Math.cos(this.x*this.y*40)));
+    const range = d3.range(0,
+                          (11+parseInt(Math.abs(this.y)*10)) * Math.PI,
+                          Math.abs(0.15*Math.cos(this.x*this.y*40)+0.15));
 
 
     let t = this.t;
 
     const animate = () => {
       spiral.attr("d", (d) => {
-        const thetaOffset = d * 30*Math.abs(Math.cos(this.x*this.y*130));
+        const thetaOffset = d * Math.abs(Math.cos(this.x*this.y*100))+Math.cos(t*0.001)+1;
         const pathData = range.map((θ) => {
-          const r = a * Math.exp(b * θ)/(this.x+this.y);
-          const x = (r*this.x + (height / 3) * (Math.sin(t / 2000) - 1)) * Math.cos(θ - t / 1000*this.x + Math.sin(this.x*t/1000)+ thetaOffset);
-          const y = (r*this.y + (height / 3) * (Math.sin(t / 2000) - 1)) * Math.sin(θ - t / 1000*this.y + Math.sin(this.y*t/1000)+thetaOffset);
+          const r = a * Math.exp(b * θ)*(t+20000)*0.0001;
+          let x = (r*this.x + (height / 3) * (Math.sin(t / 15000*this.x) - 1)) * Math.cos(θ*this.y - (this.x)*t / 3000 + thetaOffset);
+          let y = (r*this.y + (height / 3) * (Math.sin(t / 15000*this.x) - 1)) * Math.sin(θ*this.y - (this.y)*t / 3000 +thetaOffset);
+          if(this.slider3Value>10){
+           x += (r + (height / 3) * (Math.sin(((t*0.005)) / 2000) - 1)) * Math.cos(θ-(this.y*this.y*Math.cos(t*0.0001))*0.01 - t / 20000 * thetaOffset+thetaOffset)*this.slider3Value*0.001;
+           y += (r + (height / 3) * (Math.cos(((t*0.005+2000)) / 2000) - 1)) * Math.sin(θ-(this.y*this.y*Math.cos(t*0.0001))*0.01 - t /20000 *thetaOffset+thetaOffset)*this.slider3Value*0.001;}
+           x*=0.6;
+           y*=0.6;
           return [x, y];
         });
         return "M" + pathData.join("L");
@@ -174,6 +195,10 @@ methods: {
       
       t += this.slider1Value / 40 + 1;
       this.t = t;
+      svg.attr(
+        "transform",
+        "translate(" + [width / 2, height / 2] + ")rotate(" + 360 * ((t*2*Math.abs(Math.sin(this.x*this.y*40))) % 100000 / 100000) + ")"
+      );
 
       if (t ) {
         requestAnimationFrame(animate);
@@ -188,6 +213,7 @@ methods: {
 
     const slider1Value = this.slider1Value;
     const slider2Value = this.slider2Value;
+    const slider3Value = this.slider3Value;
     const colorValue = this.colorValue;
     const colorValue2 = this.colorValue2;
     const swap =this.swap;
@@ -206,10 +232,11 @@ methods: {
       this.y = movement.y;
       if (isNaN(this.x) || isNaN(this.y) || !isFinite(this.x) || !isFinite(this.y)) {
         this.x = 0.5;
-        this.y = 0.5;
+        this.y = 0.4;
         console.log("ERROR : Data not receive");
       }
     }
+
     this.refreshChart();
   },
 

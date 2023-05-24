@@ -4,6 +4,7 @@
       <D3Chart
         :slider1Value="parseInt(slider1Value)"
         :slider2Value="parseInt(slider2Value)"
+        :slider3Value="parseInt(slider3Value)"
         :colorValue="colorValue"
         :colorValue2="colorValue2"
         :swap="swap"
@@ -40,9 +41,11 @@ export default {
       resize: false,
       slider1Value: 5,
       slider2Value: 10,
+      slider3Value: 0,
+
       colorValue: "#000000",
       colorValue2: "#FFFFFF",
-      swap: true,
+      swap: false,
       movement: 0,
     };
   },
@@ -51,6 +54,7 @@ export default {
     handleParameterChange(values) {
       this.slider1Value = values.slider1Value;
       this.slider2Value = values.slider2Value;
+      this.slider3Value = values.slider3Value;
       this.colorValue = values.colorValue;
       this.colorValue2 = values.colorValue2;
       this.swap = values.swap;
