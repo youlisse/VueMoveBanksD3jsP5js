@@ -9,16 +9,7 @@ npm install
 ```
 npm run serve
 ```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
+![alt text](http://url/to/img.png) https://imgur.com/qIsF1Bq
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
