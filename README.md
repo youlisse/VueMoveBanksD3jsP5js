@@ -9,7 +9,14 @@ npm install
 ```
 npm run serve
 ```
-![alt text] (https://github.com/youlisse/VueMoveBanksD3jsP5js/blob/master/screenshots/Capture%20d'%C3%A9cran%202023-05-25%20161637.png?raw=true)
+
+![alt text](https://github.com/youlisse/VueMoveBanksD3jsP5js/blob/master/screenshots/Capture%20d'%C3%A9cran%202023-05-25%20161806.png?raw=true)
+![alt text](https://github.com/youlisse/VueMoveBanksD3jsP5js/blob/master/screenshots/Capture%20d'%C3%A9cran%202023-05-25%20161637.png?raw=true)
+![alt text](https://github.com/youlisse/VueMoveBanksD3jsP5js/blob/master/screenshots/Capture%20d'%C3%A9cran%202023-05-25%20161913.png?raw=true)
+![alt text](https://github.com/youlisse/VueMoveBanksD3jsP5js/blob/master/screenshots/Capture%20d'%C3%A9cran%202023-05-25%20162429.png?raw=true)
+![alt text](https://github.com/youlisse/VueMoveBanksD3jsP5js/blob/master/screenshots/Capture%20d'%C3%A9cran%202023-05-25%20162317.png?raw=true)
+
+
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
