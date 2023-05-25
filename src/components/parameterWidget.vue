@@ -116,6 +116,10 @@
       <h1 class="h1">Geo Beast</h1>
 
       <h2 class="h2">
+        this tool captures the mystic essence of animals<br />
+        movements, conjuring captivating art from their graceful dances
+        <br />
+        <br />
         Geo Beast is an App that takes data from Animals GPS location<br />
         converts movements into an average_translation_Vector2<br />
         and uses this data to create generative art
@@ -126,6 +130,8 @@
         Step 2 request data
         <br />
         Step 3 tweak it
+        <br />
+        refesh lagless
       </h2>
       <p class="p">
         made by Youlisse<br />

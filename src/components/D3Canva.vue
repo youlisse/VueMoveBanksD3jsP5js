@@ -113,10 +113,10 @@ methods: {
       .attr("stroke", this.colorValue2)
       .attr("stroke-opacity", 1)
       .attr("stroke-width", Math.exp(this.slider2Value * 0.1 + 2) * 0.00025 + 0.05);
-
+    let xy = this.x*this.y;
     const range = d3.range(-50*Math.abs(this.y) * Math.PI,
                             50*Math.abs(this.y)* Math.PI,
-                            Math.abs(0.15*Math.cos(this.x*this.y*40)));
+                            Math.abs(0.15*Math.cos(xy*40)));
 
     let t = this.t;
 
@@ -125,15 +125,15 @@ methods: {
 
       for (let i = 0; i < range.length; i++) {
         const p = range[i];
-        if(this.slider3Value<10){d += (Math.abs(this.y))*0.2 * width * (Math.sin(4.01 * p + t / 20222) +Math.abs(Math.cos(this.x*this.y*10))* Math.sin(3 * p + t / 10000));
+        if(this.slider3Value<10){d += (Math.abs(this.y))*0.2 * width * (Math.sin(4.01 * p + t / 20222) +Math.abs(Math.cos(xy*10))* Math.sin(3 * p + t / 10000));
         d += ",";
-        d += (Math.abs(this.x))*0.2 * height * (Math.sin(2.005 * p + t / 4000) +Math.abs(Math.sin(this.x*this.y*40))/Math.cos(t*0.00001)* Math.sin(1.01 * p + t / 10000));}
+        d += (Math.abs(this.x))*0.2 * height * (Math.sin(2.005 * p + t / 4000) +Math.abs(Math.sin(xy*40))/Math.cos(t*0.00001)* Math.sin(1.01 * p + t / 10000));}
         else{
-        d += (Math.abs(this.y))*0.2 * width * (Math.sin(4.01 * p + t / 20222) +Math.abs(Math.cos(this.x*this.y*10))* Math.sin(3 * p + t / 10000))
-        + 0.15 * width * ( Math.abs(Math.cos(this.x*this.y*40))* Math.sin( p + t / 200000))*this.slider3Value*0.001;
+        d += (Math.abs(this.y))*0.2 * width * (Math.sin(4.01 * p + t / 20222) +Math.abs(Math.cos(xy*10))* Math.sin(3 * p + t / 10000))
+        + 0.15 * width * ( Math.abs(Math.cos(xy*40))* Math.sin( p + t / 200000))*this.slider3Value*0.001;
         d += ",";
-        d += (Math.abs(this.x))*0.2 * height * (Math.sin(2.005 * p + t / 4000) +Math.abs(Math.sin(this.x*this.y*40))/Math.cos(t*0.00001)* Math.sin(1.01 * p + t / 10000))
-        + 0.21 * height * (Math.abs(Math.cos(this.x*this.y*40))* Math.sin(10 * p + t / 200000))*this.slider3Value*0.001;
+        d += (Math.abs(this.x))*0.2 * height * (Math.sin(2.005 * p + t / 4000) +Math.abs(Math.sin(xy*40))/Math.cos(t*0.00001)* Math.sin(1.01 * p + t / 10000))
+        + 0.21 * height * (Math.abs(Math.cos(xy*40))* Math.sin(10 * p + t / 200000))*this.slider3Value*0.001;
           }
         if (i !== range.length - 1) d += "L";
       }
@@ -168,24 +168,28 @@ methods: {
       .attr("stroke", this.colorValue2)
       .attr("stroke-opacity", 1)
       .attr("stroke-width", this.slider2Value * 0.15 * 0.4 + 0.1);
-
+    let xy =this.x*this.y;
     const range = d3.range(0,
                           (11+parseInt(Math.abs(this.y)*10)) * Math.PI,
-                          Math.abs(0.15*Math.cos(this.x*this.y*40)+0.15));
+                          Math.abs(0.15*Math.cos(xy*40)+0.15));
 
 
     let t = this.t;
-
+    let alpha= 1/ 15000*this.x;
     const animate = () => {
       spiral.attr("d", (d) => {
-        const thetaOffset = d * Math.abs(Math.cos(this.x*this.y*100))+Math.cos(t*0.001)+1;
+        const thetaOffset = d * Math.abs(Math.cos(xy*100))+Math.cos(t*0.001)+1;
         const pathData = range.map((θ) => {
           const r = a * Math.exp(b * θ)*(t+20000)*0.0001;
-          let x = (r*this.x + (height / 3) * (Math.sin(t / 15000*this.x) - 1)) * Math.cos(θ*this.y - (this.x)*t / 3000 + thetaOffset);
-          let y = (r*this.y + (height / 3) * (Math.sin(t / 15000*this.x) - 1)) * Math.sin(θ*this.y - (this.y)*t / 3000 +thetaOffset);
+          let sweep = θ*this.y;
+          let slide =θ-(this.y*this.y*Math.cos(t*0.0001))*0.01; 
+          let x = (r*this.x + (height / 3) * (Math.sin(t *alpha) - 1)) * Math.cos(sweep - (this.x)*t / 3000 + thetaOffset);
+          let y = (r*this.y + (height / 3) * (Math.sin(t *alpha) - 1)) * Math.sin(sweep - (this.y)*t / 3000 +thetaOffset);
           if(this.slider3Value>10){
-           x += (r + (height / 3) * (Math.sin(((t*0.005)) / 2000) - 1)) * Math.cos(θ-(this.y*this.y*Math.cos(t*0.0001))*0.01 - t / 20000 * thetaOffset+thetaOffset)*this.slider3Value*0.001;
-           y += (r + (height / 3) * (Math.cos(((t*0.005+2000)) / 2000) - 1)) * Math.sin(θ-(this.y*this.y*Math.cos(t*0.0001))*0.01 - t /20000 *thetaOffset+thetaOffset)*this.slider3Value*0.001;}
+           let offsetChaos=this.slider3Value*0.001;
+           let t2= t*0.005;
+           x += (r + (height / 3) * (Math.sin(((t2)) / 2000) - 1)) * Math.cos(slide- t / 20000 * thetaOffset+thetaOffset)*offsetChaos;
+           y += (r + (height / 3) * (Math.cos(((t2+2000)) / 2000) - 1)) * Math.sin(slide - t /20000 *thetaOffset+thetaOffset)*offsetChaos;}
            x*=0.6;
            y*=0.6;
           return [x, y];
