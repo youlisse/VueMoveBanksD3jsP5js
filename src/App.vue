@@ -25,10 +25,6 @@
 
 
 
-
-
-
-
 <script>
 //import p5jsCanva from "./components/p5jsCanva.vue";
 import AnimalWidget from "./components/parameterWidget.vue";
